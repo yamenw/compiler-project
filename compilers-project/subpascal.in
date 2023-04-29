@@ -1,0 +1,15 @@
+PROGRAM Example(Input, Output);
+  CONST
+     C=3;
+  VAR
+     X,Y,Z: integer; A,B: real; C: char; F: boolean;
+  BEGIN
+    X:=10;
+    Y:=20;
+    IF X > Y THEN
+      Z:=X+Y
+    REPEAT
+      Z:=X-Y;
+    UNTIL Z>1;
+    WRITELN(Z)
+  END.
