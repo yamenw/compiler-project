@@ -34,9 +34,12 @@
 #define NOT 286
 #define INP 287
 #define OUT 288
+#define VAR 289
+
 int lineno = 1;
 char lexbuf[BSIZE];
 int tokenval = NONE;
+int lookahead;
 
 struct entry
 { /*  form of symbol table entry  */
@@ -106,12 +109,44 @@ struct entry keywords[] = {
     {"not", NOT},
     {"inp", INP},
     {"out", OUT},
+    {"var", VAR},
     {0, 0}};
 
 void error(char *m) /* generates all error messages  */
 {
     fprintf(stderr, "line %d: %s\n", lineno, m);
     exit(EXIT_FAILURE); /*  unsuccessful termination  */
+}
+
+const char *getTokenValue(int token)
+{
+    struct entry *p;
+    for (p = keywords; p->token; p++)
+    {
+        if (p->token == token)
+        {
+            return p->lexptr;
+        }
+    }
+    char str[12]; // Make sure the buffer is large enough to hold the string
+    sprintf(str, "%d", token);
+    return str;
+}
+
+char *current_rule[256];
+
+void mismatch_error(int t)
+{
+    char msg[100];
+    sprintf(
+        msg,
+        "syntax error in match, expected %s (ASCII='%d') but found %s (ASCII='%d') in %s",
+        getTokenValue(t),
+        t,
+        getTokenValue(lookahead),
+        lookahead,
+        current_rule);
+    error(msg);
 }
 
 #endif /* GLOBAL_H */

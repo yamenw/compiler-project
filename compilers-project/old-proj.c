@@ -87,7 +87,7 @@ int lexan() {
 int lookahead;
 
 void match(int);
-void start(), list(), expr(), moreterms(), term(), morefactors(), factor();
+void start(), list(), Expr(), moreterms(), term(), morefactors(), factor();
 
 void parse() {
     lookahead = lexan();
@@ -103,13 +103,13 @@ void start() {
 
 void list() {
     if (lookahead == '(' || lookahead == ID || lookahead == NUM) {
-        expr();
+        Expr();
         match_and_emit(';');
         list();
     }
 }
 
-void expr() {
+void Expr() {
     term();
     moreterms();
 }
@@ -177,7 +177,7 @@ void match_and_emit(int token) {
 void factor() {
     if (lookahead == '(') {
         match('(');
-        expr();
+        Expr();
         match(')');
     } else if (lookahead == ID) {
         match_and_emit(ID);

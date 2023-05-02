@@ -96,7 +96,7 @@ int lexan ()  /*  lexical analyzer  */
 int lookahead;
 
 void match(int);
-void start(), list(), expr(), moreterms(), term(), morefactors(), factor();
+void start(), list(), Expr(), moreterms(), term(), morefactors(), factor();
 
 void parse()  /*  parses and translates expression list  */
 {
@@ -113,16 +113,16 @@ void start ()
 void list()
 {
   if (lookahead == '(' || lookahead == ID || lookahead == NUM) {
-    expr(); match(';'); list();
+    Expr(); match(';'); list();
   }
   else {
     /* Empty */
   }
 }
 
-void expr ()
+void Expr ()
 {
-  /* Just one production for expr, so we don't need to check lookahead */
+  /* Just one production for Expr, so we don't need to check lookahead */
   term(); moreterms();
 }
 
@@ -167,7 +167,7 @@ void morefactors ()
 void factor ()
 {
   if (lookahead == '(') {
-    match('('); expr(); match(')');
+    match('('); Expr(); match(')');
   }
   else if (lookahead == ID) {
     int id_lexeme = tokenval;

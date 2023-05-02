@@ -1,0 +1,18 @@
+PROGRAM -> HEADER DECLARATIONS BLOCK
+HEADER -> program id(input,output) ;
+Declarations -> CONST CONSTDEF CONSTDEFS | VAR VARDEC VARDECS | begin
+CONSTDEFS -> VAR VARDECS | CONSTDEF CONSTDEFS | begin
+CONSTDEF -> id=num;
+VARDECS -> VARDEC VARDECS | begin
+VARDEC -> id IDLIST;
+IDLIST -> , id | colon TYPE
+TYPE -> bool | int | float | char
+
+
+
+
+
+
+CONSTDEF -> id = num;
+VARDEC -> IDLIST : TYPE IDLISTP
+IDLISTP -> = E | colon

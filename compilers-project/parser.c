@@ -2,8 +2,6 @@
 #include "scanner.c"
 #include "code-gen.c"
 
-int lookahead;
-
 void match(int);
 void Program(),
     Header(),
@@ -17,27 +15,23 @@ void Program(),
     Block(),
     Statements(),
     Statement(),
-    ExpressionList(),
-    Expression(),
+    ExprList(),
+    Expr(),
+    SimpleExpr(),
     Term(),
     Factor();
 
 void parse() /*  parses and translates expression list  */
 {
     lookahead = lexan();
-    start();
-}
-
-void start()
-{
-    /* Just one production for start, so we don't need to check lookahead */
     Program();
-    Declarations();
 }
 
 void Program()
 {
+    /* Just one production for start, so we don't need to check lookahead */
     Header();
+    Declarations();
     Block();
 }
 
@@ -52,19 +46,125 @@ void Header()
     match(')');
     match(';');
 }
+void Block()
+{
+    strcpy(current_rule, "block");
+    match(BEGIN);
+    Statements();
+    match(END);
+}
+
+void VariableDeclarations()
+{
+    // TODO: implement
+    strcpy(current_rule, "const definition");
+}
+
+void VariableDeclaration()
+{
+    // TODO: implement
+    strcpy(current_rule, "const definition");
+}
+
+void SimpleExpr()
+{
+    // TODO: implement
+}
+
+void Statements() // Not Sure it works
+{
+    Statement();
+    if (lookahead = ';')
+    {
+        Statement();
+    }
+    else
+    {
+        /*Epsilon*/
+    }
+}
+
+void Statement()
+{
+    if (lookahead == ID)
+    {
+        match(ID);
+        match(':');
+        match('=');
+        Expr();
+    }
+    else if (lookahead == BEGIN)
+    {
+        match(BEGIN);
+        Block();
+    }
+    else if (lookahead == IF)
+    {
+        match(IF);
+        Expr();
+        match(THEN);
+        Statement();
+    }
+    else if (lookahead == REPEAT)
+    {
+        match(REPEAT);
+        Statement();
+        match(UNTIL);
+        Expr();
+    }
+    else if (lookahead == WRITELN)
+    {
+        match(WRITELN);
+        match('(');
+        SimpleExpr();
+        match(')');
+    }
+    else
+    {
+        /*Epsilon*/
+    }
+}
+
+void ExprList()
+{
+    Expr();
+}
 
 void Declarations()
 {
-    match(CONST);
-    // WIP
+    // mismatch_error(404);
+    // lookahead = lexan();
+    strcpy(current_rule, "declarations");
+    switch (lookahead)
+    {
+    case BEGIN:
+        Block();
+        break;
+
+    case CONST:
+        ConstantDefinition();
+        ConstantDefinitions();
+        break;
+
+    case VAR:
+        VariableDeclaration();
+        VariableDeclarations();
+        break;
+
+    default:
+        mismatch_error(404);
+        break;
+    }
 }
 
 void ConstantDefinition()
 {
+    strcpy(current_rule, "const definition");
 }
 
 void ConstantDefinitions()
 {
+    strcpy(current_rule, "const definition");
     ConstantDefinition();
 }
 
@@ -72,7 +172,7 @@ void list()
 {
     if (lookahead == '(' || lookahead == ID || lookahead == NUM)
     {
-        expr();
+        Expr();
         match(';');
         list();
     }
@@ -82,11 +182,10 @@ void list()
     }
 }
 
-void expr()
+void Expr()
 {
-    /* Just one production for expr, so we don't need to check lookahead */
-    term();
-    moreterms();
+    /* Just one production for Expr, so we don't need to check lookahead */
+    SimpleExpr();
 }
 
 void moreterms()
@@ -159,7 +258,7 @@ void factor()
     if (lookahead == '(')
     {
         match('(');
-        expr();
+        Expr();
         match(')');
     }
     else if (lookahead == ID)
@@ -178,39 +277,10 @@ void factor()
         error("syntax error in factor");
 }
 
-const char *getTokenValue(int token)
-{
-    struct entry *p;
-    for (p = keywords; p->token; p++)
-    {
-        if (p->token == token)
-        {
-            return p->lexptr;
-        }
-    }
-    char str[12]; // Make sure the buffer is large enough to hold the string
-    sprintf(str, "%d", token);
-    return str;
-}
-
 void match(int t)
 {
     if (lookahead == t)
         lookahead = lexan();
     else
-    {
-        char msg[100];
-        sprintf(
-            msg,
-            "syntax error in match, expected %s (ASCII='%d') but found %s (ASCII='%d')",
-            getTokenValue(t),
-            t,
-            getTokenValue(lookahead),
-            lookahead);
-        error(msg);
-    }
+        mismatch_error(t);
 }
-
-void Block(){
-
-};
