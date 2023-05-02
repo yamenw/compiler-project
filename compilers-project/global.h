@@ -1,7 +1,10 @@
+#ifndef GLOBAL_H
+#define GLOBAL_H
 #include <stdio.h>  /* include declarations for i/o routines */
 #include <ctype.h>  /* ... and for character test routines */
 #include <stdlib.h> /* ... and for some standard routines, such as exit */
 #include <string.h> /* ... and for string routines */
+
 
 #define BSIZE 128 /* buffer size */
 #define NONE -1
@@ -14,9 +17,27 @@
 #define DONE 260
 #define STRMAX 999 /*  size of lexemes array  */
 #define SYMMAX 100 /*  size of symbol table */
-
-extern int tokenval; /*  value of token attribute */
-extern int lineno;
+#define PROGRAM 271
+#define INPUT 272
+#define OUTPUT 273
+#define CONST 274
+#define INTEGER 275
+#define REAL 276
+#define CHAR 277
+#define BOOLEAN 278
+#define BEGIN 279
+#define END 280
+#define IF 281
+#define THEN 282
+#define REPEAT 283
+#define UNTIL 284
+#define WRITELN 285
+#define NOT 286
+#define INP 287
+#define OUT 288
+int lineno = 1;
+char lexbuf[BSIZE];
+int tokenval = NONE;
 
 struct entry
 { /*  form of symbol table entry  */
@@ -67,10 +88,24 @@ int insert(char *s, int tok) /*  returns position of entry for s */
 
 struct entry keywords[] = {
     {"div", DIV},
-    {
-        "mod",
-        MOD,
-    },
+    {"mod", MOD},
+    {"mod", MOD},
+    {"program", PROGRAM},
+    {"input", INPUT},
+    {"output", OUTPUT},
+    {"const", CONST},
+    {"integer", INTEGER},
+    {"real", REAL},
+    {"char", CHAR},
+    {"boolean", BOOLEAN},
+    {"begin", BEGIN},
+    {"end", END},
+    {"if", IF},
+    {"then", THEN},
+    {"repeat", REPEAT},
+    {"until", UNTIL},
+    {"writeln", WRITELN},
+    {"not", NOT},
     {0, 0}};
 
 void error(char *m) /* generates all error messages  */
@@ -78,3 +113,5 @@ void error(char *m) /* generates all error messages  */
     fprintf(stderr, "line %d: %s\n", lineno, m);
     exit(EXIT_FAILURE); /*  unsuccessful termination  */
 }
+
+#endif /* GLOBAL_H */

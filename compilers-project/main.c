@@ -1,11 +1,13 @@
+#include "scanner.c"
 #include "global.h"
+#include "parser.c"
 
 void init() /*  loads keywords into symtable  */
 {
     struct entry *p;
     for (p = keywords; p->token; p++)
         insert(p->lexptr, p->token);
-}
+};
 
 int main(int argc, char *argv[])
 {

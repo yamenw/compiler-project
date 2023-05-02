@@ -1,9 +1,6 @@
-
+#ifndef SCANNER_H
+#define SCANNER_H
 #include "global.h"
-
-char lexbuf[BSIZE];
-int lineno = 1;
-int tokenval = NONE;
 
 int lexan() /*  lexical analyzer  */
 {
@@ -51,3 +48,5 @@ int lexan() /*  lexical analyzer  */
         }
     }
 }
+
+#endif /* SCANNER_H */

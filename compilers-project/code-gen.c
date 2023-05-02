@@ -1,3 +1,5 @@
+#ifndef CODEGEN_H
+#define CODEGEN_H
 #include "global.h"
 
 void emit(int t, int tval) /*  generates output  */
@@ -26,3 +28,4 @@ void emit(int t, int tval) /*  generates output  */
         printf("token %d, tokenval %d\n", t, tval);
     }
 }
+#endif /* CODEGEN_H */

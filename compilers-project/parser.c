@@ -1,9 +1,26 @@
 #include "global.h"
+#include "scanner.c"
+#include "code-gen.c"
 
 int lookahead;
 
 void match(int);
-void start(), list(), expr(), moreterms(), term(), morefactors(), factor();
+void Program(),
+    Header(),
+    Declarations(),
+    ConstantDefinitions(),
+    ConstantDefinition(),
+    VariableDeclarations(),
+    VariableDeclaration(),
+    IdentifierList(),
+    Type(),
+    Block(),
+    Statements(),
+    Statement(),
+    ExpressionList(),
+    Expression(),
+    Term(),
+    Factor();
 
 void parse() /*  parses and translates expression list  */
 {
@@ -14,8 +31,31 @@ void parse() /*  parses and translates expression list  */
 void start()
 {
     /* Just one production for start, so we don't need to check lookahead */
-    list();
-    match(DONE);
+    Program();
+}
+
+void Program()
+{
+    Header();
+    Declarations();
+    Block();
+}
+
+void Header()
+{
+    match(PROGRAM);
+    match(ID);
+    match('(');
+    match(INP); // INPUT
+    match(',');
+    match(OUT); // OUTPUT
+    match(')');
+}
+
+void Declarations()
+{
+    match(CONST);
+    // WIP
 }
 
 void list()
@@ -135,3 +175,7 @@ void match(int t)
     else
         error("syntax error in match");
 }
+
+void Block(){
+
+};
