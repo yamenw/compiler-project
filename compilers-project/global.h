@@ -5,7 +5,7 @@
 #include <stdlib.h> /* ... and for some standard routines, such as exit */
 #include <string.h> /* ... and for string routines */
 
-#define BSIZE 128 /* buffer size */
+#define BSIZE 1024 /* buffer size */
 #define NONE -1
 #define EOS '\0'
 
@@ -15,7 +15,7 @@
 #define ID 259
 #define DONE 260
 #define STRMAX 999 /*  size of lexemes array  */
-#define SYMMAX 100 /*  size of symbol table */
+#define SYMMAX 999 /*  size of symbol table */
 #define PROGRAM 271
 #define INPUT 272
 #define OUTPUT 273
@@ -36,7 +36,7 @@
 #define OUT 288
 #define VAR 289
 
-int lineno = 1;
+int lineno = 1, colno = 1;
 char lexbuf[BSIZE];
 int tokenval = NONE;
 int lookahead;
@@ -114,7 +114,7 @@ struct entry keywords[] = {
 
 void error(char *m) /* generates all error messages  */
 {
-    fprintf(stderr, "line %d: %s\n", lineno, m);
+    fprintf(stderr, "line %d column %d: %s\n", lineno, colno, m);
     exit(EXIT_FAILURE); /*  unsuccessful termination  */
 }
 
@@ -128,16 +128,16 @@ const char *getTokenValue(int token)
             return p->lexptr;
         }
     }
-    char str[12]; // Make sure the buffer is large enough to hold the string
+    char str[24]; // Make sure the buffer is large enough to hold the string
     sprintf(str, "%d", token);
     return str;
 }
 
-char *current_rule[256];
+char *current_rule[512];
 
 void mismatch_error(int t)
 {
-    char msg[100];
+    char msg[512];
     sprintf(
         msg,
         "syntax error in match, expected %s (ASCII='%d') but found %s (ASCII='%d') in %s",

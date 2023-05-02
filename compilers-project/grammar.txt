@@ -5,7 +5,7 @@ CONSTDEFS -> VAR VARDECS | CONSTDEF CONSTDEFS | begin
 CONSTDEF -> id=num;
 VARDECS -> VARDEC VARDECS | begin
 VARDEC -> id IDLIST;
-IDLIST -> , id | colon TYPE
+IDLIST -> , id IDLIST | colon TYPE
 TYPE -> bool | int | float | char
 
 

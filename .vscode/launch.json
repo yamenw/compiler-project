@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${fileDirname}/a.out",
             "args": [
-                "subpascal.in",
+                "subpascal.subpascal",
                 "c++.out"
             ],
             "stopAtEntry": false,

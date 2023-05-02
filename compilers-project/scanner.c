@@ -9,10 +9,11 @@ int lexan() /*  lexical analyzer  */
     while (1)
     {
         t = getchar();
+        colno++;
         if (t == ' ' || t == '\t')
-            ; /*  strip out white space  */
+            colno++; /*  strip out white space  */
         else if (t == '\n')
-            lineno = lineno + 1;
+            lineno = lineno + 1, colno = 1;
         else if (isdigit(t))
         { /*  t is a digit  */
             ungetc(t, stdin);
@@ -27,6 +28,7 @@ int lexan() /*  lexical analyzer  */
             { /* t is alphanumeric  */
                 lexbuf[b] = isalpha(t) ? tolower(t) : t;
                 t = getchar();
+                colno++;
                 b = b + 1;
                 if (b >= BSIZE)
                     error("compiler error");
@@ -41,7 +43,9 @@ int lexan() /*  lexical analyzer  */
             return symtable[p].token;
         }
         else if (t == EOF)
+        {
             return DONE;
+        }
         else
         {
             tokenval = NONE;

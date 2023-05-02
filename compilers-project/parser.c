@@ -2,8 +2,18 @@
 #include "scanner.c"
 #include "code-gen.c"
 
-void match(int);
-void Program(),
+#define RULE(func)                     \
+    do                                 \
+    {                                  \
+        if (func == 1)                 \
+        {                              \
+            printf("In: %s\n", #func); \
+            return 1;                  \
+        }                              \
+    } while (0)
+
+int match(int);
+int Program(),
     Header(),
     Declarations(),
     ConstantDefinitions(),
@@ -25,9 +35,10 @@ void parse() /*  parses and translates expression list  */
 {
     lookahead = lexan();
     Program();
+    return 0;
 }
 
-void Program()
+int Program()
 {
     /* Just one production for start, so we don't need to check lookahead */
     Header();
@@ -35,7 +46,59 @@ void Program()
     Block();
 }
 
-void Header()
+int Term()
+{
+}
+
+int Type()
+{
+    strcpy(current_rule, "type");
+    switch (lookahead)
+    {
+    case REAL:
+        match(REAL);
+        break;
+
+    case BOOLEAN:
+        match(BOOLEAN);
+        break;
+
+    case INTEGER:
+        match(INTEGER);
+        break;
+
+    case CHAR:
+        match(CHAR);
+        break;
+
+    default:
+        mismatch_error(404);
+        break;
+    }
+}
+
+int IdentifierList()
+{
+    switch (lookahead)
+    {
+    case ',':
+        match(',');
+        match(ID);
+        IdentifierList();
+        break;
+
+    case ':':
+        match(':');
+        Type();
+        break;
+
+    default:
+        mismatch_error(404);
+        break;
+    }
+}
+
+int Header()
 {
     match(PROGRAM);
     match(ID);
@@ -46,37 +109,50 @@ void Header()
     match(')');
     match(';');
 }
-void Block()
+int Block()
 {
     strcpy(current_rule, "block");
     match(BEGIN);
-    Statements();
+    // Statements(); // THIS SEGFAULTS
     match(END);
 }
 
-void VariableDeclarations()
+int VariableDeclarations()
 {
-    // TODO: implement
-    strcpy(current_rule, "const definition");
+    strcpy(current_rule, "variable declaration");
+    if (lookahead == BEGIN)
+    {
+        // epsilon
+    }
+    else
+    {
+        RULE(VariableDeclaration());
+        RULE(VariableDeclarations());
+    }
 }
 
-void VariableDeclaration()
+int VariableDeclaration()
 {
-    // TODO: implement
-    strcpy(current_rule, "const definition");
+    strcpy(current_rule, "variable declaration");
+    match(ID);
+    strcpy(current_rule, "identifier list");
+    IdentifierList();
+    strcpy(current_rule, "variable declaration");
+    match(';');
 }
 
-void SimpleExpr()
+int SimpleExpr()
 {
     // TODO: implement
+    Term();
 }
 
-void Statements() // Not Sure it works
+int Statements() // Not Sure it works
 {
     Statement();
     if (lookahead = ';')
     {
-        Statement();
+        Statements();
     }
     else
     {
@@ -84,7 +160,7 @@ void Statements() // Not Sure it works
     }
 }
 
-void Statement()
+int Statement()
 {
     if (lookahead == ID)
     {
@@ -125,30 +201,73 @@ void Statement()
     }
 }
 
-void ExprList()
+int ExprList()
 {
     Expr();
+    /*wip*/
 }
 
-void Declarations()
+int Expr()
 {
-    // mismatch_error(404);
-    // lookahead = lexan();
+    /* Just one production for Expr, so we don't need to check lookahead */
+    SimpleExpr();
+    if (lookahead == '=')
+    {
+        match('=');
+        SimpleExpr();
+        emit('=', tokenval);
+    }
+    else if (lookahead == '<')
+    {
+        match('<');
+        if (lookahead == '>')
+        {
+            match('>');
+            SimpleExpr();
+            emit('>', tokenval);
+        }
+        else if (lookahead == '=')
+        {
+            match('=');
+            SimpleExpr();
+            emit('=', tokenval);
+        }
+    }
+    else if (lookahead == '>')
+    {
+        match('>');
+        if (lookahead == '=')
+        {
+            match('=');
+            SimpleExpr();
+            emit('=', tokenval);
+        }
+    }
+    else
+    {
+        /* Empty */
+    }
+}
+
+int Declarations()
+{
     strcpy(current_rule, "declarations");
     switch (lookahead)
     {
     case BEGIN:
-        Block();
+        RULE(Block());
         break;
 
     case CONST:
-        ConstantDefinition();
-        ConstantDefinitions();
+        match(CONST);
+        RULE(ConstantDefinition());
+        RULE(ConstantDefinitions());
         break;
 
     case VAR:
-        VariableDeclaration();
-        VariableDeclarations();
+        match(VAR);
+        RULE(VariableDeclaration());
+        RULE(VariableDeclarations());
         break;
 
     default:
@@ -157,18 +276,36 @@ void Declarations()
     }
 }
 
-void ConstantDefinition()
+int ConstantDefinition()
 {
     strcpy(current_rule, "const definition");
+    match(ID);
+    match('=');
+    match(NUM);
+    match(';');
 }
 
-void ConstantDefinitions()
+int ConstantDefinitions()
 {
-    strcpy(current_rule, "const definition");
-    ConstantDefinition();
+    strcpy(current_rule, "const definitions");
+    if (lookahead == VAR)
+    {
+        match(VAR);
+        RULE(VariableDeclarations());
+    }
+    else if (lookahead == CONST)
+    {
+        match(CONST);
+        RULE(ConstantDefinition());
+        RULE(ConstantDefinitions());
+    }
+    else
+    {
+        // epsilon
+    }
 }
 
-void list()
+int list()
 {
     if (lookahead == '(' || lookahead == ID || lookahead == NUM)
     {
@@ -182,13 +319,7 @@ void list()
     }
 }
 
-void Expr()
-{
-    /* Just one production for Expr, so we don't need to check lookahead */
-    SimpleExpr();
-}
-
-void moreterms()
+int moreterms()
 {
     if (lookahead == '+')
     {
@@ -210,14 +341,14 @@ void moreterms()
     }
 }
 
-void term()
+int term()
 {
     /* Just one production for term, so we don't need to check lookahead */
     factor();
     morefactors();
 }
 
-void morefactors()
+int morefactors()
 {
     if (lookahead == '*')
     {
@@ -253,7 +384,7 @@ void morefactors()
     }
 }
 
-void factor()
+int factor()
 {
     if (lookahead == '(')
     {
@@ -277,7 +408,12 @@ void factor()
         error("syntax error in factor");
 }
 
-void match(int t)
+/**
+ * if the paramter matches the current look ahead, it is consumed
+ * if it does not, the program panics.
+ * @param t the word to match
+ */
+int match(int t)
 {
     if (lookahead == t)
         lookahead = lexan();
