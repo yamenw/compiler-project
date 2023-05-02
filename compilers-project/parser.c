@@ -13,7 +13,7 @@
     } while (0)
 
 int match(int);
-int Program(),
+void Program(),
     Header(),
     Declarations(),
     ConstantDefinitions(),
@@ -38,7 +38,7 @@ void parse() /*  parses and translates expression list  */
     return 0;
 }
 
-int Program()
+void Program()
 {
     /* Just one production for start, so we don't need to check lookahead */
     Header();
@@ -46,11 +46,11 @@ int Program()
     Block();
 }
 
-int Term()
+void Term()
 {
 }
 
-int Type()
+void Type()
 {
     strcpy(current_rule, "type");
     switch (lookahead)
@@ -77,7 +77,7 @@ int Type()
     }
 }
 
-int IdentifierList()
+void IdentifierList()
 {
     switch (lookahead)
     {
@@ -98,7 +98,7 @@ int IdentifierList()
     }
 }
 
-int Header()
+void Header()
 {
     match(PROGRAM);
     match(ID);
@@ -109,7 +109,7 @@ int Header()
     match(')');
     match(';');
 }
-int Block()
+void Block()
 {
     strcpy(current_rule, "block");
     match(BEGIN);
@@ -117,7 +117,7 @@ int Block()
     match(END);
 }
 
-int VariableDeclarations()
+void VariableDeclarations()
 {
     strcpy(current_rule, "variable declaration");
     if (lookahead == BEGIN)
@@ -126,12 +126,12 @@ int VariableDeclarations()
     }
     else
     {
-        RULE(VariableDeclaration());
-        RULE(VariableDeclarations());
+        VariableDeclaration();
+        VariableDeclarations();
     }
 }
 
-int VariableDeclaration()
+void VariableDeclaration()
 {
     strcpy(current_rule, "variable declaration");
     match(ID);
@@ -141,13 +141,13 @@ int VariableDeclaration()
     match(';');
 }
 
-int SimpleExpr()
+void SimpleExpr()
 {
     // TODO: implement
     Term();
 }
 
-int Statements() // Not Sure it works
+void Statements() // Not Sure it works
 {
     Statement();
     if (lookahead = ';')
@@ -160,7 +160,7 @@ int Statements() // Not Sure it works
     }
 }
 
-int Statement()
+void Statement()
 {
     if (lookahead == ID)
     {
@@ -201,13 +201,13 @@ int Statement()
     }
 }
 
-int ExprList()
+void ExprList()
 {
     Expr();
     /*wip*/
 }
 
-int Expr()
+void Expr()
 {
     /* Just one production for Expr, so we don't need to check lookahead */
     SimpleExpr();
@@ -249,25 +249,25 @@ int Expr()
     }
 }
 
-int Declarations()
+void Declarations()
 {
     strcpy(current_rule, "declarations");
     switch (lookahead)
     {
     case BEGIN:
-        RULE(Block());
+        Block();
         break;
 
     case CONST:
         match(CONST);
-        RULE(ConstantDefinition());
-        RULE(ConstantDefinitions());
+        ConstantDefinition();
+        ConstantDefinitions();
         break;
 
     case VAR:
         match(VAR);
-        RULE(VariableDeclaration());
-        RULE(VariableDeclarations());
+        VariableDeclaration();
+        VariableDeclarations();
         break;
 
     default:
@@ -276,7 +276,7 @@ int Declarations()
     }
 }
 
-int ConstantDefinition()
+void ConstantDefinition()
 {
     strcpy(current_rule, "const definition");
     match(ID);
@@ -285,19 +285,19 @@ int ConstantDefinition()
     match(';');
 }
 
-int ConstantDefinitions()
+void ConstantDefinitions()
 {
     strcpy(current_rule, "const definitions");
     if (lookahead == VAR)
     {
         match(VAR);
-        RULE(VariableDeclarations());
+        VariableDeclarations();
     }
     else if (lookahead == CONST)
     {
         match(CONST);
-        RULE(ConstantDefinition());
-        RULE(ConstantDefinitions());
+        ConstantDefinition();
+        ConstantDefinitions();
     }
     else
     {
@@ -305,7 +305,7 @@ int ConstantDefinitions()
     }
 }
 
-int list()
+void list()
 {
     if (lookahead == '(' || lookahead == ID || lookahead == NUM)
     {
@@ -319,7 +319,7 @@ int list()
     }
 }
 
-int moreterms()
+void moreterms()
 {
     if (lookahead == '+')
     {
@@ -341,14 +341,14 @@ int moreterms()
     }
 }
 
-int term()
+void term()
 {
     /* Just one production for term, so we don't need to check lookahead */
     factor();
     morefactors();
 }
 
-int morefactors()
+void morefactors()
 {
     if (lookahead == '*')
     {
@@ -384,7 +384,7 @@ int morefactors()
     }
 }
 
-int factor()
+void factor()
 {
     if (lookahead == '(')
     {
