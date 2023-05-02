@@ -7,9 +7,19 @@ void init() /*  loads keywords into symtable  */
         insert(p->lexptr, p->token);
 }
 
-int main(void)
+int main(int argc, char *argv[])
 {
+    if (argc != 3)
+    {
+        printf("Expected 2 arguments, recieved %d.", argc);
+        exit(1);
+    }
+
+    in_file = freopen(argv[1], "r", stdin);
+    out_file = freopen(argv[2], "w", stdout);
     init();
     parse();
-    exit(0); /*  successful termination  */
+    fclose(in_file);
+    fclose(out_file);
+    exit(0);
 }

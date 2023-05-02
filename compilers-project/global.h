@@ -38,6 +38,7 @@ char lexemes[STRMAX];
 int lastchar = -1; /*  last used position in lexemes   */
 struct entry symtable[SYMMAX];
 int lastentry = 0; /*  last used position in symtable  */
+FILE *in_file, *out_file;
 
 int lookup(char *s) /*  returns position of entry for s */
 {
