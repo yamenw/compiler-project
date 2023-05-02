@@ -40,11 +40,32 @@ int lineno = 1, colno = 1;
 char lexbuf[BSIZE];
 int tokenval = NONE;
 int lookahead;
+typedef enum
+{
+    REAL_T = REAL,
+    BOOLEAN_T = BOOLEAN,
+    INTEGER_T = INTEGER,
+    CHAT_T = CHAR
+} dataType;
 
-struct entry
-{ /*  form of symbol table entry  */
+typedef enum
+{
+    true = 1,
+    false = 0
+} bool;
+
+extern struct entry
+{
     char *lexptr;
     int token;
+    dataType type;
+    union
+    {
+        float real;
+        bool boolean;
+        char character;
+        int integer;
+    } value;
 };
 
 extern struct entry symtable[]; /* symbol table  */

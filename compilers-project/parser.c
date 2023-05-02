@@ -46,10 +46,6 @@ void Program()
     Block();
 }
 
-void Term()
-{
-}
-
 void Type()
 {
     strcpy(current_rule, "type");
@@ -143,8 +139,25 @@ void VariableDeclaration()
 
 void SimpleExpr()
 {
-    // TODO: implement
     Term();
+    if (lookahead == '+')
+    {
+        match('+');
+        Term();
+        emit('+', tokenval);
+        SimpleExpr();
+    }
+    else if (lookahead == '-')
+    {
+        match('-');
+        Term();
+        emit('-', tokenval);
+        SimpleExpr();
+    }
+    else
+    {
+        /* Empty */
+    }
 }
 
 void Statements() // Not Sure it works
@@ -162,90 +175,80 @@ void Statements() // Not Sure it works
 
 void Statement()
 {
-    if (lookahead == ID)
+    switch (lookahead)
     {
+    case ID:
         match(ID);
         match(':');
         match('=');
         Expr();
-    }
-    else if (lookahead == BEGIN)
-    {
+        break;
+    case BEGIN:
         match(BEGIN);
         Block();
-    }
-    else if (lookahead == IF)
-    {
+        break;
+    case IF:
         match(IF);
         Expr();
         match(THEN);
         Statement();
-    }
-    else if (lookahead == REPEAT)
-    {
+        break;
+    case REPEAT:
         match(REPEAT);
         Statement();
         match(UNTIL);
         Expr();
-    }
-    else if (lookahead == WRITELN)
-    {
+        break;
+    case WRITELN:
         match(WRITELN);
         match('(');
         SimpleExpr();
         match(')');
+        break;
+    default:
+        mismatch_error(404); // enter the custom error code
+        break;
     }
-    else
-    {
-        /*Epsilon*/
-    }
-}
-
-void ExprList()
-{
-    Expr();
-    /*wip*/
 }
 
 void Expr()
 {
-    /* Just one production for Expr, so we don't need to check lookahead */
     SimpleExpr();
-    if (lookahead == '=')
+    switch (lookahead)
     {
+    case '=':
         match('=');
         SimpleExpr();
         emit('=', tokenval);
-    }
-    else if (lookahead == '<')
-    {
+        break;
+    case '<':
         match('<');
-        if (lookahead == '>')
-        {
-            match('>');
-            SimpleExpr();
-            emit('>', tokenval);
-        }
-        else if (lookahead == '=')
-        {
-            match('=');
-            SimpleExpr();
-            emit('=', tokenval);
-        }
-    }
-    else if (lookahead == '>')
-    {
+        SimpleExpr();
+        emit('<', tokenval);
+        break;
+    case '>':
         match('>');
-        if (lookahead == '=')
-        {
-            match('=');
-            SimpleExpr();
-            emit('=', tokenval);
-        }
-    }
-    else
-    {
-        /* Empty */
+        SimpleExpr();
+        emit('>', tokenval);
+        break;
+    case '<=':
+        match('<=');
+        SimpleExpr();
+        emit('<=', tokenval);
+        break;
+    case '>=':
+        match('>=');
+        SimpleExpr();
+        emit('>=', tokenval);
+        break;
+    case '<>>':
+        match('<>');
+        SimpleExpr();
+        emit('<>', tokenval);
+        break;
+    default:
+        mismatch_error(404); // enter the custom error code
+        break;
     }
 }
 
@@ -319,64 +322,42 @@ void list()
     }
 }
 
-void moreterms()
+void Term()
 {
-    if (lookahead == '+')
-    {
-        match('+');
-        term();
-        emit('+', tokenval);
-        moreterms();
-    }
-    else if (lookahead == '-')
-    {
-        match('-');
-        term();
-        emit('-', tokenval);
-        moreterms();
-    }
-    else
-    {
-        /* Empty */
-    }
+    /* Just one production for Term, so we don't need to check lookahead */
+    Factor();
+    MoreFactors();
 }
 
-void term()
-{
-    /* Just one production for term, so we don't need to check lookahead */
-    factor();
-    morefactors();
-}
-
-void morefactors()
+void MoreFactors()
 {
     if (lookahead == '*')
     {
         match('*');
-        factor();
+        Factor();
         emit('*', tokenval);
-        morefactors();
+        MoreFactors();
     }
     else if (lookahead == '/')
     {
         match('/');
-        factor();
+        Factor();
         emit('/', tokenval);
-        morefactors();
+        MoreFactors();
     }
     else if (lookahead == DIV)
     {
         match(DIV);
-        factor();
+        Factor();
         emit(DIV, tokenval);
-        morefactors();
+        MoreFactors();
     }
     else if (lookahead == MOD)
     {
         match(MOD);
-        factor();
+        Factor();
         emit(MOD, tokenval);
-        morefactors();
+        MoreFactors();
     }
     else
     {
@@ -384,28 +365,30 @@ void morefactors()
     }
 }
 
-void factor()
+void Factor()
 {
-    if (lookahead == '(')
+    switch (lookahead)
     {
+    case '(':
         match('(');
         Expr();
         match(')');
-    }
-    else if (lookahead == ID)
-    {
+        break;
+    case ID:
         int id_lexeme = tokenval;
         match(ID);
         emit(ID, id_lexeme);
-    }
-    else if (lookahead == NUM)
-    {
+        break;
+    case NUM:
         int num_value = tokenval;
         match(NUM);
         emit(NUM, num_value);
+        break;
+    default:
+        mismatch_error(404); // enter the custom error code
+
+        break;
     }
-    else
-        error("syntax error in factor");
 }
 
 /**

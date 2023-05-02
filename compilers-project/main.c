@@ -1,6 +1,7 @@
 #include "scanner.c"
 #include "global.h"
 #include "parser.c"
+#include "code-gen.c"
 
 void init() /*  loads keywords into symtable  */
 {

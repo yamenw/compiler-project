@@ -2,6 +2,11 @@
 #define CODEGEN_H
 #include "global.h"
 
+
+// void annotate(entry node)
+// {
+// }
+
 void emit(int t, int tval) /*  generates output  */
 {
     switch (t)
@@ -22,7 +27,7 @@ void emit(int t, int tval) /*  generates output  */
         printf("%d\n", tval);
         break;
     case ID:
-        printf("%s\n", symtable[tval].lexptr);
+        printf("%s %s\n", symtable[tval].type, symtable[tval].lexptr);
         break;
     default:
         printf("token %d, tokenval %d\n", t, tval);
