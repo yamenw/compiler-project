@@ -22,9 +22,10 @@ int lexan() /*  lexical analyzer  */
         else if (isalpha(t))
         { /*  t is a letter */
             int p, b = 0;
+            t = tolower(t);
             while (isalnum(t))
             { /* t is alphanumeric  */
-                lexbuf[b] = t;
+                lexbuf[b] = isalpha(t) ? tolower(t) : t;
                 t = getchar();
                 b = b + 1;
                 if (b >= BSIZE)

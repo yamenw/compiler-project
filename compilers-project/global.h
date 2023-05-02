@@ -5,7 +5,6 @@
 #include <stdlib.h> /* ... and for some standard routines, such as exit */
 #include <string.h> /* ... and for string routines */
 
-
 #define BSIZE 128 /* buffer size */
 #define NONE -1
 #define EOS '\0'
@@ -89,7 +88,6 @@ int insert(char *s, int tok) /*  returns position of entry for s */
 struct entry keywords[] = {
     {"div", DIV},
     {"mod", MOD},
-    {"mod", MOD},
     {"program", PROGRAM},
     {"input", INPUT},
     {"output", OUTPUT},
@@ -106,6 +104,8 @@ struct entry keywords[] = {
     {"until", UNTIL},
     {"writeln", WRITELN},
     {"not", NOT},
+    {"inp", INP},
+    {"out", OUT},
     {0, 0}};
 
 void error(char *m) /* generates all error messages  */

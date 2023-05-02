@@ -32,12 +32,12 @@ void start()
 {
     /* Just one production for start, so we don't need to check lookahead */
     Program();
+    Declarations();
 }
 
 void Program()
 {
     Header();
-    Declarations();
     Block();
 }
 
@@ -46,9 +46,9 @@ void Header()
     match(PROGRAM);
     match(ID);
     match('(');
-    match(INP); // INPUT
+    match(INPUT); // INPUT
     match(',');
-    match(OUT); // OUTPUT
+    match(OUTPUT); // OUTPUT
     match(')');
 }
 
@@ -56,6 +56,15 @@ void Declarations()
 {
     match(CONST);
     // WIP
+}
+
+void ConstantDefinition()
+{
+}
+
+void ConstantDefinitions()
+{
+    ConstantDefinition();
 }
 
 void list()
@@ -168,12 +177,31 @@ void factor()
         error("syntax error in factor");
 }
 
+const char *getTokenValue(int token)
+{
+    struct entry *p;
+    for (p = keywords; p->token; p++)
+    {
+        if (p->token == token)
+        {
+            return p->lexptr;
+        }
+    }
+    char str[12]; // Make sure the buffer is large enough to hold the string
+    sprintf(str, "%d", token);
+    return str;
+}
+
 void match(int t)
 {
     if (lookahead == t)
         lookahead = lexan();
     else
-        error("syntax error in match");
+    {
+        char msg[100];
+        sprintf(msg, "syntax error in match, expected %s but found %s", getTokenValue(t), getTokenValue(lookahead));
+        error(msg);
+    }
 }
 
 void Block(){
