@@ -50,6 +50,7 @@ void Header()
     match(',');
     match(OUTPUT); // OUTPUT
     match(')');
+    match(';');
 }
 
 void Declarations()
@@ -199,7 +200,13 @@ void match(int t)
     else
     {
         char msg[100];
-        sprintf(msg, "syntax error in match, expected %s but found %s", getTokenValue(t), getTokenValue(lookahead));
+        sprintf(
+            msg,
+            "syntax error in match, expected %s (ASCII='%d') but found %s (ASCII='%d')",
+            getTokenValue(t),
+            t,
+            getTokenValue(lookahead),
+            lookahead);
         error(msg);
     }
 }
