@@ -1,11 +1,11 @@
 #ifndef GLOBAL_H
 #define GLOBAL_H
-#include <stdio.h>  /* include declarations for i/o routines */
-#include <ctype.h>  /* ... and for character test routines */
-#include <stdlib.h> /* ... and for some standard routines, such as exit */
-#include <string.h> /* ... and for string routines */
+#include <stdio.h>  
+#include <ctype.h>  
+#include <stdlib.h> 
+#include <string.h> 
 
-#define BSIZE 1024 /* buffer size */
+#define BSIZE 1024 
 #define NONE -1
 #define EOS '\0'
 
@@ -14,8 +14,8 @@
 #define MOD 258
 #define ID 259
 #define DONE 260
-#define STRMAX 999 /*  size of lexemes array  */
-#define SYMMAX 999 /*  size of symbol table */
+#define STRMAX 999 
+#define SYMMAX 999 
 #define PROGRAM 271
 #define INPUT 272
 #define OUTPUT 273
@@ -71,23 +71,23 @@ typedef struct entry
     } value;
 };
 
-extern struct entry symtable[]; /* symbol table  */
+extern struct entry symtable[]; 
 
-extern void init();                  /*  loads keywords into symtable  */
-extern void error(char *m);          /*  generates all error messages  */
-extern int lexan();                  /*  lexical analyzer  */
-extern void parse();                 /*  parses and translates expression list  */
-extern int insert(char *s, int tok); /*  returns position of entry for s */
-extern int lookup(char *s);          /*  returns position of entry for s */
-extern void emit(int t, int tval);   /*  generates output  */
+extern void init();                  
+extern void error(char *m);          
+extern int lexan();                  
+extern void parse();                 
+extern int insert(char *s, int tok); 
+extern int lookup(char *s);          
+extern void emit(int t, int tval);   
 
 char lexemes[STRMAX];
-int lastchar = -1; /*  last used position in lexemes   */
+int lastchar = -1; 
 struct entry symtable[SYMMAX];
-int lastentry = 0; /*  last used position in symtable  */
+int lastentry = 0; 
 FILE *in_file, *out_file;
 
-int lookup(char *s) /*  returns position of entry for s */
+int lookup(char *s) 
 {
     int p;
     for (p = lastentry; p > 0; p = p - 1)
@@ -96,10 +96,10 @@ int lookup(char *s) /*  returns position of entry for s */
     return 0;
 }
 
-int insert(char *s, int tok) /*  returns position of entry for s */
+int insert(char *s, int tok) 
 {
     int len;
-    len = strlen(s); /*  strlen computes length of s     */
+    len = strlen(s); 
     if (lastentry + 1 >= SYMMAX)
         error("symbol table full");
     if (lastchar + len + 1 >= STRMAX)
@@ -136,10 +136,10 @@ struct entry keywords[] = {
     {"var", VAR},
     {0, 0}};
 
-void error(char *m) /* generates all error messages  */
+void error(char *m) 
 {
     fprintf(stderr, "line %d column %d: %s\n", lineno, colno, m);
-    exit(EXIT_FAILURE); /*  unsuccessful termination  */
+    exit(EXIT_FAILURE); 
 }
 
 const char *getTokenValue(int token)
@@ -173,4 +173,4 @@ void mismatch_error(int t)
     error(msg);
 }
 
-#endif /* GLOBAL_H */
+#endif 

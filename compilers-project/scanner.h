@@ -2,7 +2,7 @@
 #ifndef SCANNER_H
 #define SCANNER_H
 
-int lexan() /*  lexical analyzer  */
+int lexan() 
 {
 
     int t;
@@ -11,21 +11,21 @@ int lexan() /*  lexical analyzer  */
         t = getchar();
         colno++;
         if (t == ' ' || t == '\t')
-            colno++; /*  strip out white space  */
+            colno++; 
         else if (t == '\n')
             lineno = lineno + 1, colno = 1;
         else if (isdigit(t))
-        { /*  t is a digit  */
+        { 
             ungetc(t, stdin);
             scanf("%d", &tokenval);
             return NUM;
         }
         else if (isalpha(t))
-        { /*  t is a letter */
+        { 
             int p, b = 0;
             t = tolower(t);
             while (isalnum(t))
-            { /* t is alphanumeric  */
+            { 
                 lexbuf[b] = isalpha(t) ? tolower(t) : t;
                 t = getchar();
                 colno++;
@@ -54,4 +54,4 @@ int lexan() /*  lexical analyzer  */
     }
 }
 
-#endif /* SCANNER_H */
+#endif 

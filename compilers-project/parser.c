@@ -1,4 +1,3 @@
-// #include "global.h"
 #include "scanner.h"
 #include "code-gen.c"
 
@@ -31,7 +30,7 @@ void Program(),
     Term(),
     Factor();
 
-void parse() /*  parses and translates expression list  */
+void parse() 
 {
     lookahead = lexan();
     Program();
@@ -111,7 +110,7 @@ void Block()
 {
     strcpy(current_rule, "block");
     match(BEGIN);
-    Statements(); // THIS SEGFAULTS
+    Statements();
     strcpy(current_rule, "block");
     match(END);
 }
@@ -197,8 +196,7 @@ void StatementsPrime()
         StatementsPrime();
     }
     else
-    { // the emitter is not done yet
-        /*Epsilon is other files working?? so I copy em and format em ffs We do it on weekend u gonna kys wit this just give in and we continue I can assure that 70% at least are not done with it*/
+    { 
     }
 }
 
@@ -343,7 +341,7 @@ void Expr()
     //     break;
     default:
         // mismatch_error(404); // enter the custom error code
-        // EPSILON AND NOT AN ERROR DAMN IT.
+        // EPSILON 
         break;
     }
 }
