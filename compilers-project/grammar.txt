@@ -7,9 +7,13 @@ VARDECS -> VARDEC VARDECS | begin
 VARDEC -> id IDLIST;
 IDLIST -> , id IDLIST | colon TYPE
 TYPE -> bool | int | float | char
+Block -> begin Statements end
 
+Statements -> Statement StatementsPrime
 
+StatementsPrime -> ; Statement StatementsPrime | ε
 
+Statement -> id := Expression | Block | if Expression then Statement | repeat Statement until Expression | writeln ( SimpleExpression )
 
 
 

@@ -40,6 +40,9 @@ int lineno = 1, colno = 1;
 char lexbuf[BSIZE];
 int tokenval = NONE;
 int lookahead;
+
+const char *dataTypeID[4] = {"float", "bool", "int", "char"};
+
 typedef enum
 {
     REAL_T = REAL,
@@ -54,7 +57,7 @@ typedef enum
     false = 0
 } bool;
 
-extern struct entry
+typedef struct entry
 {
     char *lexptr;
     int token;

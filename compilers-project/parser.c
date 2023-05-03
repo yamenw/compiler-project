@@ -1,5 +1,5 @@
-#include "global.h"
-#include "scanner.c"
+// #include "global.h"
+#include "scanner.h"
 #include "code-gen.c"
 
 #define RULE(func)                     \
@@ -35,7 +35,6 @@ void parse() /*  parses and translates expression list  */
 {
     lookahead = lexan();
     Program();
-    return 0;
 }
 
 void Program()
@@ -75,6 +74,7 @@ void Type()
 
 void IdentifierList()
 {
+    strcpy(current_rule, "identifier list");
     switch (lookahead)
     {
     case ',':
@@ -109,7 +109,7 @@ void Block()
 {
     strcpy(current_rule, "block");
     match(BEGIN);
-    // Statements(); // THIS SEGFAULTS
+    Statements(); // THIS SEGFAULTS
     match(END);
 }
 
@@ -139,20 +139,21 @@ void VariableDeclaration()
 
 void SimpleExpr()
 {
+    strcpy(current_rule, "simple expr");
     Term();
     if (lookahead == '+')
     {
         match('+');
-        Term();
         emit('+', tokenval);
-        SimpleExpr();
+        Term();
+        SimpleExprPrime();
     }
     else if (lookahead == '-')
     {
         match('-');
-        Term();
         emit('-', tokenval);
-        SimpleExpr();
+        Term();
+        SimpleExprPrime();
     }
     else
     {
@@ -160,50 +161,93 @@ void SimpleExpr()
     }
 }
 
-void Statements() // Not Sure it works
+void SimpleExprPrime()
 {
-    Statement();
-    if (lookahead = ';')
+    strcpy(current_rule, "simple expr prime");
+    if (lookahead == '+')
     {
-        Statements();
+        match('+');
+        emit('+', tokenval);
+        Term();
+        SimpleExprPrime();
+    }
+    else if (lookahead == '-')
+    {
+        match('-');
+        emit('-', tokenval);
+        Term();
+        SimpleExprPrime();
     }
     else
     {
-        /*Epsilon*/
+        /* Empty */
     }
+}
+
+void StatementsPrime()
+{
+    strcpy(current_rule, "statements P");
+    if (lookahead = ';')
+    {
+        match(';');
+        Statement();
+        StatementsPrime();
+    }
+    else
+    { // the emitter is not done yet
+        /*Epsilon is other files working?? so I copy em and format em ffs We do it on weekend u gonna kys wit this just give in and we continue I can assure that 70% at least are not done with it*/
+    }
+}
+
+void Statements() // Not Sure it works
+{
+    strcpy(current_rule, "statements");
+    Statement();
+    StatementsPrime();
 }
 
 void Statement()
 {
+    strcpy(current_rule, "statement");
     switch (lookahead)
     {
     case ID:
         match(ID);
+        emit(ID, tokenval);
         match(':');
         match('=');
+        emit('=', tokenval);
         Expr();
         break;
     case BEGIN:
         match(BEGIN);
+        emit(BEGIN, tokenval);
         Block();
         break;
     case IF:
         match(IF);
+        emit(IF, tokenval);
         Expr();
         match(THEN);
+        emit(THEN, tokenval);
         Statement();
         break;
     case REPEAT:
         match(REPEAT);
+        emit(REPEAT, tokenval);
         Statement();
         match(UNTIL);
+        emit(UNTIL, tokenval);
         Expr();
         break;
     case WRITELN:
         match(WRITELN);
+        emit(WRITELN, tokenval);
         match('(');
+        emit('(', tokenval);
         SimpleExpr();
         match(')');
+        emit(')', tokenval);
         break;
     default:
         mismatch_error(404); // enter the custom error code
@@ -213,6 +257,7 @@ void Statement()
 
 void Expr()
 {
+    strcpy(current_rule, "expr");
     SimpleExpr();
     switch (lookahead)
     {
@@ -228,26 +273,27 @@ void Expr()
         break;
     case '>':
         match('>');
-        SimpleExpr();
         emit('>', tokenval);
-        break;
-    case '<=':
-        match('<=');
         SimpleExpr();
-        emit('<=', tokenval);
         break;
-    case '>=':
-        match('>=');
-        SimpleExpr();
-        emit('>=', tokenval);
-        break;
-    case '<>>':
-        match('<>');
-        SimpleExpr();
-        emit('<>', tokenval);
-        break;
+    // case '<=':
+    //     match('<=');
+    //     SimpleExpr();
+    //     emit('<=', tokenval);
+    //     break;
+    // case '>=':
+    //     match('>=');
+    //     SimpleExpr();
+    //     emit('>=', tokenval);
+    //     break;
+    // case '<>>':
+    //     match('<>');
+    //     SimpleExpr();
+    //     emit('<>', tokenval);
+    //     break;
     default:
-        mismatch_error(404); // enter the custom error code
+        // mismatch_error(404); // enter the custom error code
+        // EPSILON AND NOT AN ERROR DAMN IT.
         break;
     }
 }
@@ -282,10 +328,15 @@ void Declarations()
 void ConstantDefinition()
 {
     strcpy(current_rule, "const definition");
+    int lexeme = tokenval;
     match(ID);
     match('=');
+    int value = tokenval;
     match(NUM);
     match(';');
+    annotate(lexeme, lexeme, value);
+    emit(ID, lexeme);
+    emit(';', tokenval);
 }
 
 void ConstantDefinitions()
@@ -310,6 +361,7 @@ void ConstantDefinitions()
 
 void list()
 {
+    strcpy(current_rule, "list");
     if (lookahead == '(' || lookahead == ID || lookahead == NUM)
     {
         Expr();
@@ -324,6 +376,7 @@ void list()
 
 void Term()
 {
+    strcpy(current_rule, "term");
     /* Just one production for Term, so we don't need to check lookahead */
     Factor();
     MoreFactors();
@@ -331,32 +384,33 @@ void Term()
 
 void MoreFactors()
 {
+    strcpy(current_rule, "more factors");
     if (lookahead == '*')
     {
         match('*');
-        Factor();
         emit('*', tokenval);
+        Factor();
         MoreFactors();
     }
     else if (lookahead == '/')
     {
         match('/');
-        Factor();
         emit('/', tokenval);
+        Factor();
         MoreFactors();
     }
     else if (lookahead == DIV)
     {
         match(DIV);
-        Factor();
         emit(DIV, tokenval);
+        Factor();
         MoreFactors();
     }
     else if (lookahead == MOD)
     {
         match(MOD);
-        Factor();
         emit(MOD, tokenval);
+        Factor();
         MoreFactors();
     }
     else
@@ -367,6 +421,7 @@ void MoreFactors()
 
 void Factor()
 {
+    strcpy(current_rule, "factor");
     switch (lookahead)
     {
     case '(':
@@ -377,6 +432,7 @@ void Factor()
     case ID:
         int id_lexeme = tokenval;
         match(ID);
+        annotate(ID, id_lexeme, REAL_T);
         emit(ID, id_lexeme);
         break;
     case NUM:
@@ -386,7 +442,6 @@ void Factor()
         break;
     default:
         mismatch_error(404); // enter the custom error code
-
         break;
     }
 }

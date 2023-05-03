@@ -1,4 +1,4 @@
-#include "scanner.c"
+#include "scanner.h"
 #include "global.h"
 #include "parser.c"
 #include "code-gen.c"

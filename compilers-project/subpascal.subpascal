@@ -9,7 +9,7 @@ PROGRAM Example(Input, Output);
     IF X > Y THEN
       Z:=X+Y
     REPEAT
-      Z:=X-Y;
+      Z:=X-Y
     UNTIL Z>1;
     WRITELN(Z)
   END.
