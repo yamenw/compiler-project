@@ -2,6 +2,9 @@
 #define CODEGEN_H
 
 #include "global.h"
+#define ASSIGN 3000
+#define HEADER 4000
+#define DECL 5000
 
 void annotate(int tval, int lexeme, int value)
 {
@@ -24,17 +27,30 @@ void emit(int t, int tval) /*  generates output  */
     case BOOLEAN:
     case BEGIN:
     case END:
+        break;
     case IF:
+        printf("if ((", t);
+        break;
     case THEN:
+        printf("))", t);
+        break;
     case REPEAT:
+        printf("do {", t);
+        break;
     case UNTIL:
+        printf("} while (!(", t);
+        break;
     case WRITELN:
+        printf("printf(\"%%d\", %s", symtable[tval].lexptr);
+        break;
     case NOT:
     case INP:
     case OUT:
     case VAR:
         printf("%s ", getTokenValue(t));
         break;
+    case ')':
+    case '}':
     case '+':
     case '-':
     case '*':
@@ -56,8 +72,17 @@ void emit(int t, int tval) /*  generates output  */
     case ID:
         printf("%s %s\n", dataTypeID[symtable[tval].type], symtable[tval].lexptr);
         break;
-    default:
-        printf("token %d, tokenval %d\n", t, tval);
+    case ASSIGN:
+        printf("%s ", symtable[tval].lexptr);
+        break;
+    case HEADER:
+        printf("#include<iostream>\nusing namespace std;\n");
+        break;
+    case DECL:
+        printf("void main(void){");
+        break;
+    default:;
+        // printf("token %d, tokenval %d\n", t, tval);
     }
 }
 #endif /* CODEGEN_H */

@@ -43,6 +43,7 @@ void Program()
     Header();
     Declarations();
     Block();
+    emit('}', tokenval);
 }
 
 void Type()
@@ -104,6 +105,7 @@ void Header()
     match(OUTPUT); // OUTPUT
     match(')');
     match(';');
+    emit(HEADER, tokenval);
 }
 void Block()
 {
@@ -213,12 +215,14 @@ void Statement()
     switch (lookahead)
     {
     case ID:
+        int lhs = tokenval;
         match(ID);
-        emit(ID, tokenval);
+        emit(ASSIGN, lhs);
         match(':');
         match('=');
         emit('=', tokenval);
         Expr();
+        emit(';', tokenval);
         break;
     case BEGIN:
         match(BEGIN);
@@ -241,6 +245,9 @@ void Statement()
         match(UNTIL);
         emit(UNTIL, tokenval);
         Expr();
+        emit(')', tokenval);
+        emit(')', tokenval);
+        emit(';', tokenval);
         break;
     case WRITELN:
         match(WRITELN);
@@ -366,6 +373,7 @@ void Declarations()
         mismatch_error(404);
         break;
     }
+    emit(DECL, tokenval);
 }
 
 void ConstantDefinition()
@@ -476,7 +484,7 @@ void Factor()
         int id_lexeme = tokenval;
         match(ID);
         annotate(ID, id_lexeme, REAL_T);
-        emit(ID, id_lexeme);
+        emit(ASSIGN, id_lexeme);
         break;
     case NUM:
         int num_value = tokenval;
