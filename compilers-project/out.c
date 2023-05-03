@@ -9,7 +9,11 @@ if float x
 then float (null)
 =float x
 + float y
-float (null)
+repeat float (null)
 =float x
 - float y
-float (null)
+until float z
+> 1
+writeln token 40, tokenval 26
+float z
+token 41, tokenval 12

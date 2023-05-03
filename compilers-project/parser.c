@@ -110,6 +110,7 @@ void Block()
     strcpy(current_rule, "block");
     match(BEGIN);
     Statements(); // THIS SEGFAULTS
+    strcpy(current_rule, "block");
     match(END);
 }
 
@@ -187,7 +188,7 @@ void SimpleExprPrime()
 void StatementsPrime()
 {
     strcpy(current_rule, "statements P");
-    if (lookahead = ';')
+    if (lookahead == ';')
     {
         match(';');
         Statement();
@@ -236,6 +237,7 @@ void Statement()
         match(REPEAT);
         emit(REPEAT, tokenval);
         Statement();
+        strcpy(current_rule, "statement");
         match(UNTIL);
         emit(UNTIL, tokenval);
         Expr();
@@ -250,7 +252,48 @@ void Statement()
         emit(')', tokenval);
         break;
     default:
-        mismatch_error(404); // enter the custom error code
+        // epsilon
+        break;
+    }
+}
+
+void ExprPrime()
+{
+    strcpy(current_rule, "expr prime");
+    switch (lookahead)
+    {
+    case '=':
+        match('=');
+        SimpleExpr();
+        emit('=', tokenval);
+        break;
+    case '<':
+        match('<');
+        SimpleExpr();
+        emit('<', tokenval);
+        break;
+    case '>':
+        match('>');
+        emit('>', tokenval);
+        SimpleExpr();
+        break;
+    // case '<=':
+    //     match('<=');
+    //     SimpleExpr();
+    //     emit('<=', tokenval);
+    //     break;
+    // case '>=':
+    //     match('>=');
+    //     SimpleExpr();
+    //     emit('>=', tokenval);
+    //     break;
+    // case '<>>':
+    //     match('<>');
+    //     SimpleExpr();
+    //     emit('<>', tokenval);
+    //     break;
+    default:
+        // EPSILON
         break;
     }
 }
